@@ -60,5 +60,3 @@ cd DinoJump
 Feel free to fork the repository and make improvements or contribute in any way. Pull requests are welcome!
 
 ---
-
-This README provides the key details for understanding and using the Dino Jump game. You can add more sections as needed, such as troubleshooting or developer notes.
