@@ -1,9 +1,279 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&family=Playfair+Display:ital,wght@1,500&display=swap');
+
 body {
-    font-family:'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center the wrapper vertically */
+}
+
+#page-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* keep the game middle-aligned against the sidebars */
+    width: 100%;
+    max-width: 1300px; /* limits how wide the outer layout gets */
+    gap: 40px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Hide sidebars gracefully on smaller/narrow screens */
+@media (max-width: 950px) {
+    .sidebar {
+        display: none !important;
+    }
+}
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     text-align: center;
 }
 
-#board {
-    /* background-color: skyblue; */
+.glass-panel h3 {
+    margin: 0 0 15px 0;
+    color: #ff6b6b;
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+}
+
+.glass-panel p {
+    color: #636e72;
+    line-height: 1.5;
+    font-size: 16px;
+    margin: 0 0 10px 0;
+}
+
+.divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    width: 80%;
+}
+
+#memories-counter {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2d3436;
+    margin-top: 5px;
+}
+
+#memories-found {
+    color: #ff6b6b;
+}
+
+#game-container {
+    position: relative;
+    height: 90vh;
+    max-height: 700px;
+    aspect-ratio: 65 / 70;
+    max-width: 100vw;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    border-radius: 20px;
+    overflow: hidden;
     background-image: url("../images/background.png");
+    background-size: cover;
+    background-position: center bottom;
+}
+
+#background-scroll {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* No height constraint, it will scroll downwards */
+    pointer-events: none;
+    transition: transform 0.1s linear;
+    z-index: 5;
+}
+
+#board {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    transition: opacity 1.5s ease;
+}
+
+/* UI Overlay */
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: opacity 1.5s ease;
+}
+
+#score-container {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    margin: 15px 25px;
+    padding: 6px 15px; /* smaller padding */
+    border-radius: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#birthday-greeting {
+    font-size: 14px; /* smaller text */
+    font-weight: 600;
+    color: #ff6b6b;
+    letter-spacing: 0.5px;
+}
+
+#score-text {
+    font-size: 16px; /* smaller text */
+    font-weight: 700;
+    color: #2d3436;
+}
+
+#game-over-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    z-index: 30;
+    pointer-events: auto;
+}
+
+#game-over-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#game-over-overlay h2 {
+    font-size: 54px;
+    color: #ff6b6b;
+    margin: 0 0 10px 0;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+}
+
+#game-over-overlay p {
+    font-size: 20px;
+    color: #636e72;
+    margin: 0;
+}
+
+/* Framed Photos */
+.photo-wrapper {
+    position: absolute;
+    transform-origin: center center;
+    pointer-events: auto;
+}
+
+.photo-frame {
+    background: white;
+    padding: 15px 15px 45px 15px; /* Polaroid style */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    border-radius: 4px;
+}
+
+.photo-frame img {
+    border-radius: 2px;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+/* Dedicated Note Screen Transition */
+#dedicated-note-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 40;
+    background: rgba(253, 251, 251, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 2.5s ease;
+    pointer-events: auto;
+}
+
+#dedicated-note-screen.hidden-screen {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.note-content {
+    width: 80%;
+    max-height: 90%;
+    overflow-y: auto;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(255, 107, 107, 0.15);
+    border: 1px solid rgba(255, 107, 107, 0.1);
+    text-align: center;
+    scrollbar-width: none; /* Firefox */
+}
+.note-content::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.note-content h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    color: #ff6b6b;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.note-content p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #2d3436;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.note-content .signature {
+    margin-top: 30px;
+    font-size: 22px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: #d63031;
+    text-align: right;
 }
