@@ -247,10 +247,22 @@ body {
     box-shadow: 0 20px 60px rgba(255, 107, 107, 0.15);
     border: 1px solid rgba(255, 107, 107, 0.1);
     text-align: center;
-    scrollbar-width: none; /* Firefox */
 }
+
+/* Beautiful Custom Scrollbar for the Note */
 .note-content::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    width: 8px;
+}
+.note-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 10px;
+}
+.note-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 107, 107, 0.5);
+    border-radius: 10px;
+}
+.note-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 107, 107, 0.8);
 }
 
 .note-content h1 {
