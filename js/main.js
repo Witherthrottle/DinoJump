@@ -69,7 +69,8 @@ let dino = {
     width: dinoWidth,
 };
 
-
+let gameStarted = false;
+let tiltVelocity = 0;
 
 document.addEventListener('DOMContentLoaded', () =>{
     board = document.getElementById("board");
@@ -108,14 +109,42 @@ document.addEventListener('DOMContentLoaded', () =>{
     imgArray.push(['d', d_pImg]);
     imgArray.push(['m', m_pImg]);
     placePlatforms()
-    requestAnimationFrame(update);
+    
+    document.getElementById('start-btn').addEventListener('click', () => {
+        document.getElementById('start-screen').classList.add('hidden');
+        
+        // Request device orientation permissions for iOS 13+
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission()
+                .then(permissionState => {
+                    if (permissionState === 'granted') {
+                        window.addEventListener('deviceorientation', handleOrientation);
+                    }
+                })
+                .catch(console.error);
+        } else {
+            // Non-iOS 13+ devices
+            window.addEventListener('deviceorientation', handleOrientation);
+        }
+        
+        gameStarted = true;
+        requestAnimationFrame(update);
+    });
+
     document.addEventListener("keydown", moveDino);
     document.addEventListener("keyup", stopDino);
+    
+    // Add touch listener to document to restart on mobile
+    document.addEventListener('touchstart', (e) => {
+        if (gameOver === true) {
+            restartGame();
+        }
+    });
 
 });
 
 function update(){
-    if (hasWon) return; // Stop the physics loop once won
+    if (!gameStarted || hasWon) return; // Stop the physics loop once won
     
     requestAnimationFrame(update);
     if (score >= WIN_SCORE && !hasWon) {
@@ -153,6 +182,8 @@ function update(){
                 let unlocked = Math.floor(score / SCORE_PER_IMAGE);
                 if (unlocked > whatsappImages.length) unlocked = whatsappImages.length;
                 memoriesFoundElement.innerText = unlocked.toString();
+                let mobileArtifactsFound = document.getElementById('mobile-artifacts-found');
+                if (mobileArtifactsFound) mobileArtifactsFound.innerText = unlocked.toString();
             }
            }
     else{
@@ -199,9 +230,23 @@ function update(){
     }
     DinoYVelocity -= gravity;
     dino.y -= DinoYVelocity;
-    dino.x += DinoXVeclocity;
+    dino.x += (DinoXVeclocity !== 0 ? DinoXVeclocity : tiltVelocity);
 }
 
+function handleOrientation(event) {
+    let gamma = event.gamma; 
+    
+    if (gamma === null) return;
+    
+    let tilt = Math.max(-45, Math.min(45, gamma));
+    
+    // Deadzone to prevent jitter
+    if (Math.abs(tilt) < 3) {
+        tiltVelocity = 0;
+    } else {
+        tiltVelocity = (tilt / 45) * 10; // phone max speed
+    }
+}
 
 function placePlatforms(){
     if (platformArray.length != 0){
@@ -268,20 +313,26 @@ function detectCollision(platform){
     return false;
 }
 
+function restartGame() {
+    placePlatforms();
+    dino.y = dinoY;
+    dino.x = dinoX;
+    platformDistance = boardHeight;
+    DinoYVelocity = 12;
+    platformArray = [];
+    score = 0;
+    scoreText.innerText = score.toString();
+    if (memoriesFoundElement) memoriesFoundElement.innerText = "0";
+    let mobileArtifactsFound = document.getElementById('mobile-artifacts-found');
+    if (mobileArtifactsFound) mobileArtifactsFound.innerText = "0";
+    bgScroll.style.transform = `translateY(0px)`;
+    gameOverOverlay.classList.add('hidden');
+    gameOver = false;
+}
+
 function moveDino(e) {
     if (gameOver === true){
-        placePlatforms();
-        dino.y = dinoY;
-        dino.x = dinoX;
-        platformDistance = boardHeight;
-        DinoYVelocity = 12;
-        platformArray = [];
-        score = 0;
-        scoreText.innerText = score.toString();
-        if (memoriesFoundElement) memoriesFoundElement.innerText = "0";
-        bgScroll.style.transform = `translateY(0px)`;
-        gameOverOverlay.classList.add('hidden');
-        gameOver = false;
+        restartGame();
     }
     if (e.code == "ArrowRight") {
         //right

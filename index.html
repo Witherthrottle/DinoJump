@@ -16,7 +16,7 @@
                 <p>Use <b>Left</b> and <b>Right</b> arrow keys to move the Dino.</p>
                 <div class="divider"></div>
                 <h3>✨ The Journey</h3>
-                <p>Keep jumping higher to unlock hidden photo memories!</p>
+                <p>Keep jumping higher to unlock hidden artifacts!</p>
             </div>
         </div>
 
@@ -32,12 +32,21 @@
         <div id="ui-layer">
             <div id="score-container">
                 <span id="birthday-greeting">Happy Birthday Aina! 🎉</span>
-                <span id="score-text">0</span>
+                <div class="score-right">
+                    <span id="score-text">0</span>
+                    <span id="mobile-artifact-counter" class="mobile-only">✨ <span id="mobile-artifacts-found">0</span>/16</span>
+                </div>
             </div>
             
+            <div id="start-screen">
+                <h2>Dino Jump</h2>
+                <p>Use arrow keys or <b>tilt your phone</b> to move!</p>
+                <button id="start-btn">Start Game</button>
+            </div>
+
             <div id="game-over-overlay" class="hidden">
                 <h2>Game Over</h2>
-                <p>Press any key to jump back up!</p>
+                <p>Tap or press any key to jump back up!</p>
             </div>
         </div>
 
@@ -59,7 +68,7 @@
     <!-- Right Sidebar: Memories Counter -->
     <div class="sidebar right-sidebar">
         <div class="glass-panel">
-            <h3>📸 Memories Unlocked</h3>
+            <h3>📸 Artifacts Collected</h3>
             <div id="memories-counter"><span id="memories-found">0</span> / 16</div>
         </div>
     </div>
